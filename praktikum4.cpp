@@ -21,6 +21,15 @@ struct Peminjaman {
 Peminjaman daftarPinjam[100];
 int jumlahPinjam = 0;
 
+//praktkum 4 Ahmadfahreza 
+// fitur pencarian Buku
+//fungsi rekursif pencarian buku dalam  array string buku
+bool cariBuku(string arr[], int n, string judul){
+    if (n == 0) return false;
+    if (arr[n-1] == judul) return true;
+    return cariBuku(arr, n-1, judul);
+}
+
 void tampilkanBuku() {
     cout << "\n### DAFTAR BUKU ###\n";
     for (int i = 0; i < jumlahBuku; i++) {
@@ -86,6 +95,7 @@ int main() {
         cout << "3. Lihat Daftar Buku\n";
         cout << "4. Lihat Daftar Peminjam\n";
         cout << "5. Keluar program\n";
+        cout << "6.Cari Buku\n";
         cout << "Pilihan: ";
         cin >> pilihan;
         cin.ignore();
@@ -141,6 +151,17 @@ int main() {
             case 5:
                 cout << "Keluar dari sistem...\n";
                 break;
+            case 6: {
+                cout << "Masukkan judul buku yang dicari: ";
+                getline(cin, judulBuku);
+
+                if (cariBuku(daftarBuku, jumlahBuku, judulBuku)) {
+                    cout << "Buku \"" << judulBuku << "\" tersedia di perpustakaan.\n";
+                } else {
+                    cout << "Buku \"" << judulBuku << "\" tidak ditemukan.\n";
+                }
+                break;
+                }
             default:
                 cout << "Pilihan tidak valid.\n";
         }

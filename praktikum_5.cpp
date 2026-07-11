@@ -21,6 +21,29 @@ struct Peminjaman {
 Peminjaman daftarPinjam[100];
 int jumlahPinjam = 0;
 
+
+bool cariBuku(string arr[], int n, string judul){
+    if (n == 0) return false;
+    if (arr[n-1] == judul) return true;
+    return cariBuku(arr, n-1, judul);
+}
+
+// Pertemuan 5
+// Ahmad fahreza 2500018243
+// Fitur Rekursif menampilakan riwayat orang dan buku yang dipinjam
+void tampilkanRiwayatRekursif(int n) {
+    if (n < 0) {
+        if (jumlahPinjam == 0) cout << "Belum ada riwayat peminjaman.\n";
+        return;
+    }
+    cout << "--------------------------" << endl;
+    cout << "Nama Peminjam  : " << daftarPinjam[n].namaPeminjam << endl;
+    cout << "Judul Buku     : " << daftarPinjam[n].judulBuku << endl;
+    cout << "Tanggal Pinjam : " << daftarPinjam[n].tanggalPinjam << endl;
+    cout << "Status         : " << (daftarPinjam[n].dipinjam ? "Masih Dipinjam" : "Sudah Kembali") << endl;
+    tampilkanRiwayatRekursif(n - 1);
+}
+
 void tampilkanBuku() {
     cout << "\n### DAFTAR BUKU ###\n";
     for (int i = 0; i < jumlahBuku; i++) {
@@ -59,18 +82,7 @@ void kembalikanBuku(string judulBuku, string namaPeminjam) {
     }
 
     if (!ditemukan) {
-        cout << "Data peminjaman tidak ditemukan.\n";
-    }
-}
-
-void daftar_peminjam(){
-    for(int q=0; q<jumlahPinjam; q++){
-        cout << "### DAFTAR PEMINJAM ###" << endl;
-        cout <<"Nama peminjam : " << daftarPinjam[q].namaPeminjam << endl;
-        cout << "Judul Buku \t: " << daftarPinjam[q].judulBuku <<endl;
-        cout << "Tanggal Pinjam \t: " << daftarPinjam[q].tanggalPinjam <<endl;
-        cout <<endl;
-        daftarPinjam[q].dipinjam= false;
+        cout << "Data peminjaman tidak ditemukan atau buku sudah dikembalikan.\n";
     }
 }
 
@@ -84,8 +96,9 @@ int main() {
         cout << "1. Pinjam Buku\n";
         cout << "2. Kembalikan Buku\n";
         cout << "3. Lihat Daftar Buku\n";
-        cout << "4. Lihat Daftar Peminjam\n";
-        cout << "5. Keluar program\n";
+        cout << "4. Lihat Riwayat Peminjam (Rekursif)\n";
+        cout << "5. Cari Buku (Rekursif)\n";
+        cout << "6. Keluar Program\n";
         cout << "Pilihan: ";
         cin >> pilihan;
         cin.ignore();
@@ -93,58 +106,63 @@ int main() {
         switch(pilihan) {
             case 1: {
                 ditemukan = false;
-                cout << "Masukan nama peminjam : ";
+                cout << "Masukkan nama peminjam : ";
                 getline(cin, namaPeminjam);
-                cout << "Masukan nama Buku : ";
+                cout << "Masukkan nama Buku : ";
                 getline(cin, judulBuku);
-                cout << "Masukan tanggal pinjam : ";
+                cout << "Masukkan tanggal pinjam : ";
                 getline(cin, tanggalPinjam);
 
-                for (int i = 0; i < jumlahBuku; i++) {
-                    if (daftarBuku[i] == judulBuku) {
-                        ditemukan = true;
-                        daftarPinjam[jumlahPinjam].namaPeminjam = namaPeminjam;
-                        daftarPinjam[jumlahPinjam].judulBuku = judulBuku;
-                        daftarPinjam[jumlahPinjam].tanggalPinjam = tanggalPinjam;
-                        daftarPinjam[jumlahPinjam].dipinjam = true;
-                        jumlahPinjam++;
-                        break;
-                    }
+                // Menggunakan fungsi rekursif cariBuku untuk validasi
+                if (cariBuku(daftarBuku, jumlahBuku, judulBuku)) {
+                    ditemukan = true;
+                    daftarPinjam[jumlahPinjam].namaPeminjam = namaPeminjam;
+                    daftarPinjam[jumlahPinjam].judulBuku = judulBuku;
+                    daftarPinjam[jumlahPinjam].tanggalPinjam = tanggalPinjam;
+                    daftarPinjam[jumlahPinjam].dipinjam = true;
+                    jumlahPinjam++;
                 }
 
                 cout << "\n### DATA PEMINJAMAN ###" << endl;
                 if (ditemukan) {
                     cout << "Nama        : " << namaPeminjam << endl;
                     cout << "Buku        : " << judulBuku << endl;
-                    cout << "Tanggal     : " << tanggalPinjam << endl;
-                    cout << "\nStatus: Peminjaman berhasil dicatat" << endl;
+                    cout << "Status      : Peminjaman berhasil dicatat" << endl;
                 } else {
-                    cout << "Buku tidak tersedia di perpustakaan" << endl;
-                    cout << "Status: Gagal meminjam" << endl;
+                    cout << "Buku \"" << judulBuku << "\" tidak tersedia." << endl;
                 }
                 break;
             }
-            case 2: {
+            case 2:
                 cout << "Masukkan nama peminjam: ";
                 getline(cin, namaPeminjam);
-                cout << "Masukkan judul buku yang dikembalikan: ";
+                cout << "Masukkan judul buku: ";
                 getline(cin, judulBuku);
                 kembalikanBuku(judulBuku, namaPeminjam);
                 break;
-            }
             case 3:
                 tampilkanBuku();
                 break;
             case 4:
-                daftar_peminjam();
+                cout << "\n### RIWAYAT PEMINJAMAN (Terbaru -> Lama) ###\n";
+                tampilkanRiwayatRekursif(jumlahPinjam - 1);
                 break;
             case 5:
-                cout << "Keluar dari sistem...\n";
+                cout << "Masukkan judul buku yang dicari: ";
+                getline(cin, judulBuku);
+                if (cariBuku(daftarBuku, jumlahBuku, judulBuku)) {
+                    cout << "Buku tersedia.\n";
+                } else {
+                    cout << "Buku tidak ditemukan.\n";
+                }
+                break;
+            case 6:
+                cout << "Keluar...\n";
                 break;
             default:
                 cout << "Pilihan tidak valid.\n";
         }
-    } while(pilihan != 5);
+    } while(pilihan != 6);
 
     return 0;
 }
